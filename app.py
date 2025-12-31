@@ -15,7 +15,7 @@ import tempfile
 import io
 
 # Import functions from analyze_balance.py
-from analyze_balance import parse_csv_file, calculate_balances
+from analyze_balance import parse_csv_file, calculate_balances, load_config
 
 
 # French month names
@@ -124,6 +124,11 @@ def main():
     st.title("💰 Tableau de Bord Financier")
     st.markdown("---")
 
+    # Load configuration
+    config = load_config()
+    config_initial_balance = config.get('initial_balance', 0.0)
+    config_start_date = config.get('start_date')
+
     # Sidebar - File upload and configuration
     st.sidebar.header("📁 Données")
 
@@ -141,7 +146,7 @@ def main():
         ### Instructions
         1. Cliquez sur **"Browse files"** dans la barre latérale
         2. Sélectionnez un ou plusieurs fichiers CSV de vos relevés bancaires
-        3. Configurez le solde initial et la date de début (optionnel)
+        3. Les paramètres par défaut sont chargés depuis `config.json`
         4. L'analyse se mettra à jour automatiquement
 
         ### Format de fichier attendu
@@ -149,7 +154,14 @@ def main():
         - Colonnes: Date, Libellé, Montant
         - Format de date: DD/MM/YYYY
         - Format numérique: virgule comme séparateur décimal
-        """)
+
+        ### Configuration actuelle
+        - Solde initial: {:.2f} €
+        - Date de début: {}
+        """.format(
+            config_initial_balance,
+            config_start_date if config_start_date else "Non définie"
+        ))
         return
 
     st.sidebar.success(f"✅ {len(uploaded_files)} fichier(s) chargé(s)")
@@ -159,24 +171,27 @@ def main():
 
     initial_balance = st.sidebar.number_input(
         "Solde initial (€)",
-        value=0.0,
+        value=config_initial_balance,
         step=100.0,
         format="%.2f",
-        help="Le solde de votre compte avant la première transaction"
+        help="Le solde de votre compte avant la première transaction (valeur par défaut depuis config.json)"
     )
 
     use_start_date = st.sidebar.checkbox(
         "Filtrer par date de début",
-        value=False,
+        value=bool(config_start_date),
         help="Activer pour ne prendre en compte que les transactions à partir d'une certaine date"
     )
 
     start_date = None
     if use_start_date:
+        # Parse config start date as default
+        default_date = pd.to_datetime(config_start_date).date() if config_start_date else None
+
         start_date = st.sidebar.date_input(
             "Date de début",
-            value=None,
-            help="Seules les transactions à partir de cette date seront incluses"
+            value=default_date,
+            help="Seules les transactions à partir de cette date seront incluses (valeur par défaut depuis config.json)"
         )
         if start_date:
             start_date = pd.to_datetime(start_date)

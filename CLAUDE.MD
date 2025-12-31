@@ -69,16 +69,26 @@ Date;Libellé;Montant(EUROS)
 - Positive amounts indicate credits/income
 
 ### Implemented Features
+
+**Web Application:**
+- [x] File upload interface (no local file storage required)
+- [x] Interactive configuration (initial balance, start date)
+- [x] Real-time analysis with instant updates
+- [x] French language interface
+- [x] Balance evolution chart (interactive Plotly)
+- [x] Monthly income/expense bar charts (green/red)
+- [x] Transaction search functionality
+- [x] Excel export (download button)
+- [x] Privacy-focused (in-memory processing only)
+
+**CLI Tool:**
 - [x] CSV parser for bank statement imports
 - [x] Balance history visualization (PNG plots)
 - [x] Export to Excel with transactions and summary
 - [x] Multi-file support (processes all CSV files in data folder)
-- [x] Configuration file for customization
-- [x] Interactive Streamlit web application
-- [x] French language interface
-- [x] Date range filtering
-- [x] Monthly income/expense bar charts (green/red)
-- [x] Transaction search functionality
+- [x] Configuration file for customization (`config.json`)
+- [x] Date filtering by start date
+- [x] Duplicate transaction detection
 
 ### Potential Future Features
 - [ ] Transaction categorization (groceries, utilities, transfers, etc.)
@@ -132,7 +142,13 @@ uv run streamlit run app.py
 # Or without uv
 streamlit run app.py
 ```
-Then open your browser to `http://localhost:8501`
+Then open your browser to `http://localhost:8501` and:
+1. Upload your CSV bank statement files
+2. Set your initial balance (e.g., 42734.2 for balance on 01/11/2025)
+3. Optionally enable date filtering and set start date (e.g., 01/11/2025)
+4. View your analysis in real-time
+
+**Note**: The web app does NOT use `config.json`. All settings are configured through the UI.
 
 **Option B: CLI Analysis**
 ```bash
@@ -142,6 +158,7 @@ uv run analyze_balance.py
 # Or without uv
 python analyze_balance.py
 ```
+This will use settings from `config.json` (initial_balance: 42734.2, start_date: "2025-11-01")
 
 ### Output
 
@@ -150,10 +167,16 @@ python analyze_balance.py
 - Real-time balance evolution chart
 - Monthly income/expense comparison (green/red bars)
 - Transaction table with search
-- Date range filtering
-- Key metrics display
+- Key metrics display (solde initial, solde final, revenus, dépenses)
+- Excel export via download button (generated on-demand, not saved to disk)
 
-**CLI Analysis generates:**
+**How to use:**
+- Upload CSV files in the sidebar
+- Configure initial balance and start date in the UI
+- All processing happens in-memory
+- No data is stored on the server
+
+**CLI Analysis generates (saved to disk):**
 - **PNG plots**:
   - `output/balance_plot_YYYYMMDD_to_YYYYMMDD.png` (with transaction date range)
   - `output/balance_plot_latest.png` (always points to most recent)
