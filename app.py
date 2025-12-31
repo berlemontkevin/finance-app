@@ -81,9 +81,12 @@ def process_uploaded_files(uploaded_files, start_date=None, initial_balance=0.0)
     return df_with_balance
 
 
-def format_currency(value):
+def format_currency(value, decimals=0):
     """Format value as EUR currency in French format."""
-    return f"{value:,.2f} €".replace(",", " ").replace(".", ",")
+    if decimals == 0:
+        return f"{value:,.0f} €".replace(",", " ")
+    else:
+        return f"{value:,.{decimals}f} €".replace(",", " ").replace(".", ",")
 
 
 def prepare_monthly_data(df):
@@ -260,7 +263,7 @@ def main():
         line=dict(color='#1f77b4', width=2),
         marker=dict(size=4),
         hovertemplate='<b>Date:</b> %{x|%d/%m/%Y}<br>' +
-                      '<b>Solde:</b> %{y:,.2f} €<br>' +
+                      '<b>Solde:</b> %{y:,.0f} €<br>' +
                       '<extra></extra>'
     ))
 
@@ -292,7 +295,7 @@ def main():
         name='Revenus',
         marker_color='#2ecc71',
         hovertemplate='<b>%{x}</b><br>' +
-                      'Revenus: %{y:,.2f} €<br>' +
+                      'Revenus: %{y:,.0f} €<br>' +
                       '<extra></extra>'
     ))
 
@@ -303,7 +306,7 @@ def main():
         name='Dépenses',
         marker_color='#e74c3c',
         hovertemplate='<b>%{x}</b><br>' +
-                      'Dépenses: %{y:,.2f} €<br>' +
+                      'Dépenses: %{y:,.0f} €<br>' +
                       '<extra></extra>'
     ))
 
@@ -333,9 +336,9 @@ def main():
     st.subheader("📋 Résumé Mensuel")
 
     monthly_display = monthly_data.copy()
-    monthly_display['Revenus'] = monthly_display['income'].apply(format_currency)
-    monthly_display['Dépenses'] = monthly_display['expense'].apply(format_currency)
-    monthly_display['Solde Net'] = monthly_display['net'].apply(format_currency)
+    monthly_display['Revenus'] = monthly_display['income'].apply(lambda x: format_currency(x, decimals=0))
+    monthly_display['Dépenses'] = monthly_display['expense'].apply(lambda x: format_currency(x, decimals=0))
+    monthly_display['Solde Net'] = monthly_display['net'].apply(lambda x: format_currency(x, decimals=0))
 
     st.dataframe(
         monthly_display[['month_label', 'Revenus', 'Dépenses', 'Solde Net']].rename(
@@ -357,8 +360,8 @@ def main():
     transactions_display = df.copy()
     transactions_display['Date'] = transactions_display['date'].dt.strftime('%d/%m/%Y')
     transactions_display['Description'] = transactions_display['description']
-    transactions_display['Montant'] = transactions_display['amount'].apply(format_currency)
-    transactions_display['Solde'] = transactions_display['balance'].apply(format_currency)
+    transactions_display['Montant'] = transactions_display['amount'].apply(lambda x: format_currency(x, decimals=2))
+    transactions_display['Solde'] = transactions_display['balance'].apply(lambda x: format_currency(x, decimals=2))
 
     # Apply search filter
     if search_term:
