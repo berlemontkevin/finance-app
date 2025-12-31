@@ -1,0 +1,2 @@
+# Ce fichier permet de garder le dossier data/ dans git
+# Tout le contenu de ce dossier (fichiers CSV) est ignoré par git

@@ -1,0 +1,13 @@
+{
+  "initial_balance": 42734.2,
+  "start_date": "2025-11-01",
+  "data_folder": "data",
+  "output_folder": "output",
+  "plot_settings": {
+    "figure_size": [12, 6],
+    "title": "Account Balance Over Time",
+    "xlabel": "Date",
+    "ylabel": "Balance (EUR)",
+    "grid": true
+  }
+}

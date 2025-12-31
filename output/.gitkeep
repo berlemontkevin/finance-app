@@ -1,0 +1,2 @@
+# Ce fichier permet de garder le dossier output/ dans git
+# Tout le contenu de ce dossier (graphiques et fichiers Excel) est ignoré par git
